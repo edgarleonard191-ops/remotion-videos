@@ -38,14 +38,30 @@ and timing already wired up.
 2. In `src/assets-manifest.ts`, flip `shotVideoAvailable[N]` to `true`.
 3. Reload the Studio preview — the placeholder card is replaced by the clip.
 
-**Dropping in ElevenLabs voice lines**
+**Dropping in voice lines**
 
-1. Generate line `N` (see `src/data/dialogue.ts` for the text/speaker) and
-   save it as `public/audio/line-NN.mp3`.
-2. In `src/assets-manifest.ts`, flip `lineAudioAvailable[N]` to `true`.
-3. The `<Audio>` track will play alongside the caption automatically.
+All 38 lines have already been generated as real character voice audio via
+Higgsfield (`seed_audio` TTS, one preset voice per character — see
+`src/data/audio-sources.ts` for the voice-to-character mapping). They're
+wired in as **remote URLs** (`src/data/audio-sources.ts`) because this
+sandbox's network policy blocks direct downloads from Higgsfield's CDN
+host (`d8j0ntlcm91z4.cloudfront.net`) — Remotion's `<Audio>` happily plays
+a remote src, so the project works as-is in any environment with normal
+internet access (your machine, CI, etc).
 
-Once every shot and line is flipped on, render the full video with
+To make it fully self-contained instead:
+
+1. Download each URL in `src/data/audio-sources.ts` to
+   `public/audio/line-NN.mp3` (matching the line number).
+2. In `src/assets-manifest.ts`, flip `lineAudioAvailable[N]` to `true` — the
+   composition prefers the local file over the remote URL once available.
+
+**Dropping in generated video clips still follows the same manual flow**
+(no video was generated — see the cost note in `src/data/shots.ts`'s
+history: at ~11-15 credits per 10s clip, 36 clips would run ~400-500
+credits, so this pass only covers voice + captions over placeholder cards).
+
+Once every shot is flipped on, render the full video with
 `npx remotion render PipsBirthdayParty out/pips-birthday-party.mp4`.
 
 > This sandbox blocks downloading Remotion's pinned Chrome Headless Shell.
