@@ -11,8 +11,10 @@ export const shotVideoAvailable: Record<number, boolean> = Object.fromEntries(
 ) as Record<number, boolean>;
 
 /**
- * Flip a line to `true` once its ElevenLabs render is saved as
- * public/audio/line-XX.mp3 (see dialogue.ts for the line -> text mapping).
+ * Flip a line to `true` once its generated voice-over is saved locally as
+ * public/audio/line-XX.wav (see dialogue.ts for the line -> text mapping,
+ * and audio-sources.ts for the Higgsfield URL to download it from). Until
+ * then, the composition falls back to the remote Higgsfield URL.
  */
 export const lineAudioAvailable: Record<number, boolean> = Object.fromEntries(
   dialogue.map((line) => [line.line, false]),
@@ -22,4 +24,4 @@ export const shotVideoFileName = (shotId: number) =>
   `videos/shot-${String(shotId).padStart(2, "0")}.mp4`;
 
 export const lineAudioFileName = (lineNumber: number) =>
-  `audio/line-${String(lineNumber).padStart(2, "0")}.mp3`;
+  `audio/line-${String(lineNumber).padStart(2, "0")}.wav`;

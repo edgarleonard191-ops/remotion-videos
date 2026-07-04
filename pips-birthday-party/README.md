@@ -52,7 +52,8 @@ internet access (your machine, CI, etc).
 To make it fully self-contained instead:
 
 1. Download each URL in `src/data/audio-sources.ts` to
-   `public/audio/line-NN.mp3` (matching the line number).
+   `public/audio/line-NN.wav` (matching the line number — the files are wav,
+   not mp3, despite the `.wav` extension not being obvious from the URL).
 2. In `src/assets-manifest.ts`, flip `lineAudioAvailable[N]` to `true` — the
    composition prefers the local file over the remote URL once available.
 
