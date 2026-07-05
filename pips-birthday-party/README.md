@@ -57,10 +57,28 @@ To make it fully self-contained instead:
 2. In `src/assets-manifest.ts`, flip `lineAudioAvailable[N]` to `true` — the
    composition prefers the local file over the remote URL once available.
 
-**Dropping in generated video clips still follows the same manual flow**
-(no video was generated — see the cost note in `src/data/shots.ts`'s
-history: at ~11-15 credits per 10s clip, 36 clips would run ~400-500
-credits, so this pass only covers voice + captions over placeholder cards).
+**Dropping in generated video clips**
+
+5 of 36 shots (1, 13, 27, 29, 36) have real generated clips via Higgsfield
+(`kling3_0_turbo`, text-to-video, 720p) — see `src/data/video-sources.ts`.
+Same remote-URL pattern as audio: wired in directly since this sandbox
+can't download from Higgsfield's CDN, with a local-file-first fallback via
+`shotVideoAvailable` in `assets-manifest.ts`.
+
+**Known quality problem, not yet fixed:** these 5 clips were generated as
+pure text-to-video with no character reference image. A scene analysis of
+the assembled result showed the model substituting *entirely wrong
+animals* — a bear and rabbits that aren't in the cast at all, with Prof,
+Luna, and Biscuit simply missing. Fixing this needs character reference
+images (e.g. via `generate_image` using the character prompts in
+`SCRIPT.md`) generated first and passed as a `start_image`/reference to
+each shot's `generate_video` call — not yet done, and it costs additional
+credits on top of the clip generation itself.
+
+For the remaining 31 shots, generate them the same way (`kling3_0_turbo`,
+`duration: 10`, the shot's prompt from `shots.ts` + the style anchor) and
+add each `rawUrl` to `video-sources.ts`, or download and drop the file into
+`public/videos/shot-NN.mp4` and flip `shotVideoAvailable[N]`.
 
 Once every shot is flipped on, render the full video with
 `npx remotion render PipsBirthdayParty out/pips-birthday-party.mp4`.

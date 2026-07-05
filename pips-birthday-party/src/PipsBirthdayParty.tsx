@@ -2,6 +2,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig } from "remot
 import { shots, SHOT_DURATION_SECONDS } from "./data/shots";
 import { dialogue } from "./data/dialogue";
 import { remoteAudioUrl } from "./data/audio-sources";
+import { remoteVideoUrl } from "./data/video-sources";
 import {
   lineAudioAvailable,
   lineAudioFileName,
@@ -16,6 +17,13 @@ const audioSrcFor = (lineNumber: number) => {
     return staticFile(lineAudioFileName(lineNumber));
   }
   return remoteAudioUrl[lineNumber] ?? null;
+};
+
+const videoSrcFor = (shotId: number) => {
+  if (shotVideoAvailable[shotId]) {
+    return staticFile(shotVideoFileName(shotId));
+  }
+  return remoteVideoUrl[shotId] ?? null;
 };
 
 const msToFrames = (ms: number, fps: number) => Math.round((ms / 1000) * fps);
@@ -33,11 +41,7 @@ export const PipsBirthdayParty: React.FC = () => {
           durationInFrames={shotDurationInFrames}
           premountFor={shotDurationInFrames}
         >
-          <ShotPlaceholder
-            shot={shot}
-            hasVideo={shotVideoAvailable[shot.id]}
-            videoSrc={shotVideoFileName(shot.id)}
-          />
+          <ShotPlaceholder shot={shot} videoSrc={videoSrcFor(shot.id)} />
         </Sequence>
       ))}
 

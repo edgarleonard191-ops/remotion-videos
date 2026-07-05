@@ -3,10 +3,10 @@ import {
   Easing,
   OffthreadVideo,
   interpolate,
-  staticFile,
   useCurrentFrame,
 } from "remotion";
 import type { Shot } from "../data/shots";
+import { shotVideoFileName } from "../assets-manifest";
 
 // Cycles through a small warm palette so the placeholder deck reads as
 // distinct scenes at a glance while real clips are still being generated.
@@ -19,9 +19,9 @@ const PLACEHOLDER_GRADIENTS = [
 
 export const ShotPlaceholder: React.FC<{
   shot: Shot;
-  hasVideo: boolean;
-  videoSrc: string;
-}> = ({ shot, hasVideo, videoSrc }) => {
+  /** Local public/videos/shot-NN.mp4 src, or a remote Higgsfield URL fallback, or null if neither exists yet. */
+  videoSrc: string | null;
+}> = ({ shot, videoSrc }) => {
   const frame = useCurrentFrame();
 
   const fadeIn = interpolate(frame, [0, 15], [0, 1], {
@@ -30,10 +30,10 @@ export const ShotPlaceholder: React.FC<{
     extrapolateRight: "clamp",
   });
 
-  if (hasVideo) {
+  if (videoSrc) {
     return (
       <AbsoluteFill style={{ opacity: fadeIn }}>
-        <OffthreadVideo src={staticFile(videoSrc)} />
+        <OffthreadVideo src={videoSrc} />
       </AbsoluteFill>
     );
   }
@@ -65,7 +65,7 @@ export const ShotPlaceholder: React.FC<{
           {shot.prompt}
         </div>
         <div style={{ fontSize: 20, marginTop: 40, opacity: 0.5 }}>
-          Drop the generated clip at public/{videoSrc} to replace this placeholder.
+          Drop the generated clip at public/{shotVideoFileName(shot.id)} to replace this placeholder.
         </div>
       </div>
     </AbsoluteFill>
